@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Details - Carkin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .product-modal {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 1.5rem;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      animation: zoomin 0.3s ease;
+    }
+
+    .product-modal img {
+      width: 100%;
+      border-radius: 10px;
+      max-height: 300px;
+      object-fit: cover;
+    }
+
+    h2 {
+      margin: 1rem 0 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    button {
+      padding: 10px 16px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    @keyframes zoomin {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="product-modal">
+    <img id="product-img" src="" alt="Product Image" />
+    <h2 id="product-name">Loading...</h2>
+    <p id="product-price"></p>
+    <p id="product-description"></p>
+    <button onclick="addToCart()">Add to Cart</button>
+  </div>
+
+  <script>
+    // Step 1: Load product from localStorage
+    const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+    // Step 2: Render content dynamically
+    if (product) {
+      document.getElementById("product-name").textContent = product.name;
+      document.getElementById("product-price").textContent = `₹${product.price.toLocaleString("en-IN")}`;
+      document.getElementById("product-description").textContent = product.description || "No description available.";
+      document.getElementById("product-img").src = product.img || "https://via.placeholder.com/500x300";
+    } else {
+      document.querySelector(".product-modal").innerHTML = "<h2>Product not found!</h2>";
+    }
+
+    // Step 3: Add to Cart Logic
+    function addToCart() {
+      if (!product) return;
+
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      const exists = cart.find(item => item.name === product.name);
+      if (exists) {
+        alert("Product already in cart!");
+        return;
+      }
+
+      cart.push(product);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Product added to cart!");
+    }
+  </script>
+</body>
+</html>

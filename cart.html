@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cart - Carkin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #fff);
+      color: #333;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #007BFF;
+    }
+
+    .cart-container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-info {
+      flex: 2;
+    }
+
+    .cart-info h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .price {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .quantity-control button {
+      padding: 0.3rem 0.7rem;
+      font-size: 1rem;
+      border: none;
+      background: #007BFF;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .quantity-control span {
+      min-width: 30px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: red;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .total-section {
+      text-align: right;
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .checkout-btn {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.8rem;
+      background: #00c3ff;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+      background: #009ddc;
+    }
+
+    @media(max-width: 600px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .quantity-control {
+        justify-content: flex-start;
+      }
+
+      .total-section {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛒 Your Cart</h1>
+  <div class="cart-container" id="cartContainer">
+    <!-- Items will be rendered here -->
+  </div>
+
+  <script>
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const container = document.getElementById("cartContainer");
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>🪹 Your cart is empty.</p>";
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach(item => {
+        total += item.price * item.quantity;
+        container.innerHTML += `
+          <div class="cart-item">
+            <div class="cart-info">
+              <h3>${item.name}</h3>
+              <div class="price">₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}</div>
+            </div>
+            <div class="quantity-control">
+              <button onclick="changeQuantity(${item.id}, -1)">−</button>
+              <span>${item.quantity}</span>
+              <button onclick="changeQuantity(${item.id}, 1)">+</button>
+              <button class="remove-btn" onclick="removeItem(${item.id})"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML += `
+        <div class="total-section">Total: ₹${total}</div>
+        <button class="checkout-btn" onclick="checkout()">🛍️ Proceed to Checkout</button>
+      `;
+    }
+
+    function changeQuantity(id, delta) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        cart = cart.filter(i => i.id !== id);
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(id) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart = cart.filter(i => i.id !== id);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function checkout() {
+      alert("✅ Checkout Successful!\nYour order has been placed.");
+      localStorage.removeItem("cart");
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+
+</body>
+</html>
